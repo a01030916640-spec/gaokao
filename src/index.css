@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #182126;
+  --color-paper: #fffdf8;
+  --color-paper-2: #f8f3ea;
+  --color-navy: #15324a;
+  --color-teal: #2e6065;
+  --color-gold: #bf8d34;
+  --color-muted: #61707b;
+  --color-bg-page: #f3efe6;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-page text-ink;
+    background-image: 
+      radial-gradient(circle at top left, rgba(191, 141, 52, 0.08), transparent 25%),
+      radial-gradient(circle at top right, rgba(46, 96, 101, 0.08), transparent 25%);
+    background-attachment: fixed;
+  }
+}
+
+.paper-panel {
+  @apply bg-paper border border-black/5 rounded-[22px] shadow-[0_10px_40px_rgba(24,33,38,0.08)] overflow-hidden;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-xl border border-black/10 bg-white focus:outline-none focus:ring-4 focus:ring-navy/5 focus:border-navy/30 transition-all;
+}
+
+.label-title {
+  @apply block text-sm font-bold text-muted mb-2;
+}
+
