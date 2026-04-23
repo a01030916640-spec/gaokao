@@ -27,7 +27,9 @@ import {
   BUDGET_LEVELS, 
   PARENT_PRIORITIES, 
   STUDY_ISSUES, 
-  OUTPUT_NEEDS 
+  OUTPUT_NEEDS,
+  MAJOR_SUGGESTIONS_MAP,
+  TIER_MODIFIER
 } from './constants';
 
 // --- Types ---
@@ -159,6 +161,26 @@ export default function App() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const addMajorFromSuggestion = (major: string) => {
+    setFormData(prev => {
+      const current = prev.preferredMajors.trim();
+      const separator = current ? '、' : '';
+      if (current.includes(major)) return prev;
+      return { ...prev, preferredMajors: current + separator + major };
+    });
+  };
+
+  // --- Suggestions Logic ---
+  const smartSuggestions = useMemo(() => {
+    if (!formData.subjectCombination) return [];
+    
+    const base = MAJOR_SUGGESTIONS_MAP[formData.subjectCombination] || MAJOR_SUGGESTIONS_MAP["其他"] || [];
+    const modifier = TIER_MODIFIER[formData.targetTier] || [];
+    
+    // Mix them
+    return [...new Set([...base, ...modifier])].slice(0, 10);
+  }, [formData.subjectCombination, formData.targetTier]);
 
   const handleSliderChange = (name: string, value: number) => {
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -502,6 +524,27 @@ export default function App() {
                       className="input-field min-h-[100px]" 
                       placeholder="如：电子信息、计算机、人工智能、经济学" 
                     />
+                    
+                    {/* Smart Suggestions */}
+                    {smartSuggestions.length > 0 && (
+                      <div className="mt-3">
+                        <div className="text-[10px] font-black text-teal underline h-4 uppercase tracking-[0.2em] mb-2 leading-none flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          根据您的选科及目标建议
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {smartSuggestions.map(major => (
+                            <button
+                              key={major}
+                              onClick={() => addMajorFromSuggestion(major)}
+                              className="px-2.5 py-1.5 rounded-lg bg-teal/5 border border-teal/10 text-[11px] font-bold text-teal hover:bg-teal hover:text-white transition-all transform hover:-translate-y-0.5"
+                            >
+                              + {major}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="label-title text-red-700/60">不接受的专业 <span className="text-red-500">*</span></label>
